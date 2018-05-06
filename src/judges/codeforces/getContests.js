@@ -2,7 +2,7 @@
 import request from 'request';
 import type { Contest } from '../../types';
 
-export function getContests(): Promise<Array<Contest> | Object> {
+export function getContests(from?: Date, to?: Date): Promise<Array<Contest> | Object> {
   return new Promise((resolve, reject) => {
     // making request to the codeforces api
     request('http://codeforces.com/api/contest.list', (error: Object, response: Object, body: string) => {
@@ -38,6 +38,16 @@ export function getContests(): Promise<Array<Contest> | Object> {
 
           contests.push(contest);
         }
+
+        if (from)
+          contests = contests.filter((contest) => {
+            return ('startTime' in contest) && (contest.startTime >= from);
+          });
+        if (to)
+          contests = contests.filter((contest) => {
+            return ('startTime' in contest) && (contest.startTime <= to);
+          });
+
         resolve(contests);
       } else
         reject(error);
