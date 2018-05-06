@@ -1,6 +1,7 @@
 // @flow
 import request from 'request';
 import type { Contest } from '../../types';
+import { filterContests } from '../../utils';
 
 export function getContests(from?: Date, to?: Date): Promise<Array<Contest> | Object> {
   return new Promise((resolve, reject) => {
@@ -39,14 +40,7 @@ export function getContests(from?: Date, to?: Date): Promise<Array<Contest> | Ob
           contests.push(contest);
         }
 
-        if (from)
-          contests = contests.filter((contest) => {
-            return ('startTime' in contest) && (contest.startTime >= from);
-          });
-        if (to)
-          contests = contests.filter((contest) => {
-            return ('startTime' in contest) && (contest.startTime <= to);
-          });
+        contests = filterContests(contests, from, to);
 
         resolve(contests);
       } else
